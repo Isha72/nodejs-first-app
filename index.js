@@ -5,7 +5,6 @@ import cookieParser from "cookie-parser";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
-
 mongoose.connect("mongodb://127.0.0.1:27017", {
     dbName: "backend",
 }).then(()=> console.log("Database Connected")).catch((e) => console.log(e));
@@ -17,9 +16,7 @@ const userSchema = new mongoose.Schema({
 });
 
 const User = mongoose.model("User", userSchema);
-
 const app = express();
-
 
 app.use(express.static(path.join(path.resolve(), "public")));
 
@@ -40,7 +37,6 @@ const isAuthentiated = async (req, res, next) => {
     else{
         res.redirect("/login");
     }
-
 }
 
 app.get("/", isAuthentiated, (req, res) =>{
@@ -63,7 +59,6 @@ app.post("/login", async (req, res) =>{
         return res.redirect("/register");
     }
     const isMatch = await bcrypt.compare(password, user.password);
-
     if(!isMatch) return res.render("login", { email, message: "Incorrect Password"});
 
     const token = jwt.sign({_id: user._id}, "dajbfhsavdahs");
@@ -72,7 +67,6 @@ app.post("/login", async (req, res) =>{
         httpOnly:true, expires: new Date(Date.now() + 60*1000),
     });
     res.redirect("/");
-
 });
 
 app.post("/register", async (req, res) =>{
@@ -97,16 +91,12 @@ app.post("/register", async (req, res) =>{
     res.redirect("/login");
 });
 
-
-
 app.get("/logout", (req, res) =>{
     res.cookie("token", null, {
         httpOnly:true, expires: new Date(Date.now()),
     });
     res.redirect("/");
 });
-
-
 
 app.listen(5000, ()=>{
     console.log("server is working");
